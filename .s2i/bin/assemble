@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+echo "---> Installing application source"
+cp -Rf /tmp/src/. ./
+
+
+if [ -f ./nginx.conf ]; then
+  echo "---> Copying nginx.conf configuration file..."
+  envsubst < ./nginx.conf > /etc/opt/rh/rh-nginx18/nginx/nginx.conf
+  rm -rf ./nginx.conf
+fi
+
+if [ -d ./nginx-cfg ]; then
+  echo "---> Copying nginx configuration files..."
+  for f in $(find nginx-cfg -name '*.conf'); 
+    do 
+      envsubst < $f > ${NGINX_CONFIGURATION_PATH}/$(basename $f)
+    done
+  rm -rf ./nginx-cfg
+fi
+
+
+
+# Fix source directory permissions
+fix-permissions ./
+
